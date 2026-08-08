@@ -21,7 +21,7 @@ export class Entity {
     this.color = color;
   }
 
-  update() {}
+  update(input?: any): void {}
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color;
