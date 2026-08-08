@@ -75,7 +75,7 @@ export default function Home() {
 
             <div className="mt-4 flex flex-col gap-2 text-sm">
               <span className="inline-flex w-fit rounded-full bg-green-500/15 px-3 py-1 text-green-400">
-                🎮 Single Player Available
+                🤖 AI (single player) | 👥 Local multiplayer | 🌐 Online multiplayer
               </span>
             </div>
 
