@@ -12,8 +12,12 @@ export default function Home() {
           GAMIFILO
         </h1>
 
-       <p className="mt-6 max-w-2xl text-lg text-slate-300 sm:text-xl">
-  Play fun browser games. Challenge friends. More games coming soon.
+        <p className="mt-1 text-xs italic text-slate-600">
+  made by Pranay Maske
+</p>
+
+       <p className="mt-6 max-w-2xl text-lg text-slate-500 sm:text-xl">
+  Play fun browser games. Challenge friends. More games coming in future.
 </p>
 
         <a
