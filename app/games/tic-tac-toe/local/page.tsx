@@ -2,64 +2,82 @@
 
 import { useState } from "react";
 import TicTacToeBoard from "../components/TicTacToeBoard";
+import TicTacToeScoreboard from "../components/TicTacToeScoreboard";
 
 type SymbolType = "X" | "O";
 type ThemeType = "blue" | "orange" | "purple" | "green";
 
+type Theme = {
+  primary: string;
+  secondary: string;
+  background: string;
+};
+
+type Score = {
+  X: number;
+  O: number;
+  draw: number;
+};
+
+const themes: Record<ThemeType, Theme> = {
+  blue: {
+    primary: "#00bfff",
+    secondary: "#00e5ff",
+    background: "#080b16",
+  },
+
+  orange: {
+    primary: "#ff9800",
+    secondary: "#ffc107",
+    background: "#15100a",
+  },
+
+  purple: {
+    primary: "#b026ff",
+    secondary: "#ff00ff",
+    background: "#120820",
+  },
+
+  green: {
+    primary: "#00ff88",
+    secondary: "#00ff00",
+    background: "#06120c",
+  },
+};
+
 export default function TicTacToePage() {
-  const [board, setBoard] = useState<string[]>(Array(9).fill(""));
+  const [board, setBoard] = useState<string[]>(
+    Array(9).fill("")
+  );
+
   const [turn, setTurn] = useState<SymbolType>("X");
 
-  const [theme, setTheme] = useState<ThemeType>("blue");
+  const [theme, setTheme] =
+    useState<ThemeType>("blue");
 
-  const [player1Name, setPlayer1Name] = useState("Player 1");
-  const [player2Name, setPlayer2Name] = useState("Player 2");
+  const [player1Name, setPlayer1Name] =
+    useState("Player 1");
 
-  // Player 1 chooses X or O.
-  // Player 2 automatically gets the opposite.
+  const [player2Name, setPlayer2Name] =
+    useState("Player 2");
+
   const [player1Symbol, setPlayer1Symbol] =
     useState<SymbolType>("X");
 
   const player2Symbol: SymbolType =
     player1Symbol === "X" ? "O" : "X";
 
-  const [score, setScore] = useState({
+  const [score, setScore] = useState<Score>({
     X: 0,
     O: 0,
     draw: 0,
   });
 
-  const [winner, setWinner] = useState<SymbolType | "draw" | null>(
-    null
-  );
+  const [winner, setWinner] =
+    useState<SymbolType | "draw" | null>(null);
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const themes = {
-    blue: {
-      primary: "#00bfff",
-      secondary: "#00e5ff",
-      background: "#080b16",
-    },
-
-    orange: {
-      primary: "#ff9800",
-      secondary: "#ffc107",
-      background: "#15100a",
-    },
-
-    purple: {
-      primary: "#b026ff",
-      secondary: "#ff00ff",
-      background: "#120820",
-    },
-
-    green: {
-      primary: "#00ff88",
-      secondary: "#00ff00",
-      background: "#06120c",
-    },
-  };
+  const [settingsOpen, setSettingsOpen] =
+    useState(false);
 
   const currentTheme = themes[theme];
 
@@ -70,9 +88,15 @@ export default function TicTacToePage() {
   }
 
   function play(index: number) {
-    if (board[index] !== "" || winner !== null) return;
+    if (
+      board[index] !== "" ||
+      winner !== null
+    ) {
+      return;
+    }
 
     const newBoard = [...board];
+
     newBoard[index] = turn;
 
     const winningLines = [
@@ -86,13 +110,15 @@ export default function TicTacToePage() {
       [2, 4, 6],
     ];
 
-    const hasWinner = winningLines.some(([a, b, c]) => {
-      return (
-        newBoard[a] !== "" &&
-        newBoard[a] === newBoard[b] &&
-        newBoard[a] === newBoard[c]
-      );
-    });
+    const hasWinner = winningLines.some(
+      ([a, b, c]) => {
+        return (
+          newBoard[a] !== "" &&
+          newBoard[a] === newBoard[b] &&
+          newBoard[a] === newBoard[c]
+        );
+      }
+    );
 
     setBoard(newBoard);
 
@@ -107,7 +133,9 @@ export default function TicTacToePage() {
       return;
     }
 
-    const isDraw = newBoard.every((cell) => cell !== "");
+    const isDraw = newBoard.every(
+      (cell) => cell !== ""
+    );
 
     if (isDraw) {
       setWinner("draw");
@@ -120,7 +148,9 @@ export default function TicTacToePage() {
       return;
     }
 
-    setTurn(turn === "X" ? "O" : "X");
+    setTurn(
+      turn === "X" ? "O" : "X"
+    );
   }
 
   function restart() {
@@ -141,12 +171,434 @@ export default function TicTacToePage() {
     });
   }
 
-  function changePlayer1Symbol(symbol: SymbolType) {
+  function changePlayer1Symbol(
+    symbol: SymbolType
+  ) {
     setPlayer1Symbol(symbol);
 
     setBoard(Array(9).fill(""));
     setWinner(null);
     setTurn(symbol);
+  }
+
+  function renderScoreboard() {
+    return (
+      <TicTacToeScoreboard
+        player1Name={player1Name}
+        player2Name={player2Name}
+        player1Symbol={player1Symbol}
+        player2Symbol={player2Symbol}
+        score={score}
+        turn={turn}
+        winner={winner}
+        primary={currentTheme.primary}
+        secondary={currentTheme.secondary}
+      />
+    );
+  }
+
+  function renderWinnerCard() {
+    if (!winner) return null;
+
+    return (
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "560px",
+          padding: "20px",
+          boxSizing: "border-box",
+          borderRadius: "18px",
+          textAlign: "center",
+          background: "#111722",
+          border: `2px solid ${
+            winner === "draw"
+              ? "#ffffff"
+              : currentTheme.primary
+          }`,
+          boxShadow: `0 0 25px ${
+            winner === "draw"
+              ? "#ffffff33"
+              : currentTheme.primary + "66"
+          }`,
+        }}
+      >
+        {winner === "draw" ? (
+          <>
+            <div
+              style={{
+                fontSize: "32px",
+              }}
+            >
+              🤝
+            </div>
+
+            <div
+              style={{
+                marginTop: "4px",
+                fontSize: "24px",
+                fontWeight: "bold",
+              }}
+            >
+              IT'S A DRAW!
+            </div>
+
+            <div
+              style={{
+                marginTop: "4px",
+                opacity: 0.7,
+              }}
+            >
+              Nobody wins this round.
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              style={{
+                fontSize: "34px",
+              }}
+            >
+              🏆
+            </div>
+
+            <div
+              style={{
+                marginTop: "4px",
+                fontSize: "26px",
+                fontWeight: "bold",
+                color: currentTheme.primary,
+              }}
+            >
+              {getPlayerName(winner)} WINS!
+            </div>
+
+            <div
+              style={{
+                marginTop: "4px",
+                opacity: 0.7,
+              }}
+            >
+              {winner === "X"
+                ? "❌ X"
+                : "⭕ O"}{" "}
+              completed the winning line.
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function renderActionButtons() {
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(2, minmax(0, 1fr))",
+          gap: "10px",
+        }}
+      >
+        {/* RESTART — HIGHLIGHTED */}
+        <button
+          onClick={restart}
+          style={{
+            padding: "11px 12px",
+            borderRadius: "10px",
+            cursor: "pointer",
+            border: `2px solid ${currentTheme.primary}`,
+            background: `${currentTheme.primary}22`,
+            color: "white",
+            fontWeight: "bold",
+            boxShadow: `0 0 12px ${currentTheme.primary}44`,
+          }}
+        >
+          🔄 Restart
+        </button>
+
+        {/* NEW GAME — NORMAL */}
+        <button
+          onClick={newGame}
+          style={{
+            padding: "11px 12px",
+            borderRadius: "10px",
+            cursor: "pointer",
+            border: "1px solid #303642",
+            background: "#1a202c",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          🆕 New Game
+        </button>
+      </div>
+    );
+  }
+
+  function renderSettings() {
+    return (
+      <>
+        {/* PLAYER 1 */}
+        <div
+          style={{
+            marginBottom: "16px",
+          }}
+        >
+          <label
+            style={{
+              display: "block",
+              marginBottom: "6px",
+              fontSize: "13px",
+              fontWeight: "bold",
+            }}
+          >
+            Player 1 Name
+          </label>
+
+          <input
+            value={player1Name}
+            maxLength={20}
+            onChange={(e) =>
+              setPlayer1Name(e.target.value)
+            }
+            style={{
+              display: "block",
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #3b4352",
+              background: "#080b16",
+              color: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        {/* PLAYER 2 */}
+        <div
+          style={{
+            marginBottom: "16px",
+          }}
+        >
+          <label
+            style={{
+              display: "block",
+              marginBottom: "6px",
+              fontSize: "13px",
+              fontWeight: "bold",
+            }}
+          >
+            Player 2 Name
+          </label>
+
+          <input
+            value={player2Name}
+            maxLength={20}
+            onChange={(e) =>
+              setPlayer2Name(e.target.value)
+            }
+            style={{
+              display: "block",
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #3b4352",
+              background: "#080b16",
+              color: "white",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        {/* SYMBOL */}
+        <div
+          style={{
+            marginBottom: "18px",
+          }}
+        >
+          <div
+            style={{
+              marginBottom: "8px",
+              fontSize: "13px",
+              fontWeight: "bold",
+            }}
+          >
+            Player 1 Symbol
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(2, minmax(0, 1fr))",
+              gap: "8px",
+            }}
+          >
+            <button
+              onClick={() =>
+                changePlayer1Symbol("X")
+              }
+              style={{
+                padding: "11px",
+                borderRadius: "10px",
+                border:
+                  player1Symbol === "X"
+                    ? `3px solid ${currentTheme.primary}`
+                    : "2px solid #555",
+                background:
+                  player1Symbol === "X"
+                    ? currentTheme.primary
+                    : "#222",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              ❌ X
+            </button>
+
+            <button
+              onClick={() =>
+                changePlayer1Symbol("O")
+              }
+              style={{
+                padding: "11px",
+                borderRadius: "10px",
+                border:
+                  player1Symbol === "O"
+                    ? `3px solid ${currentTheme.secondary}`
+                    : "2px solid #555",
+                background:
+                  player1Symbol === "O"
+                    ? currentTheme.secondary
+                    : "#222",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              ⭕ O
+            </button>
+          </div>
+
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "12px",
+              opacity: 0.65,
+            }}
+          >
+            {player1Name}: {player1Symbol}
+            {"  |  "}
+            {player2Name}: {player2Symbol}
+          </div>
+        </div>
+
+        {/* THEME */}
+        <div>
+          <div
+            style={{
+              marginBottom: "8px",
+              fontSize: "13px",
+              fontWeight: "bold",
+            }}
+          >
+            Theme
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(4, minmax(0, 1fr))",
+              gap: "8px",
+            }}
+          >
+            <button
+              onClick={() =>
+                setTheme("blue")
+              }
+              style={{
+                padding: "10px 4px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                border:
+                  theme === "blue"
+                    ? `2px solid ${currentTheme.primary}`
+                    : "1px solid #3b4352",
+                background: "#17202e",
+                color: "white",
+                fontSize: "18px",
+              }}
+            >
+              🔵
+            </button>
+
+            <button
+              onClick={() =>
+                setTheme("orange")
+              }
+              style={{
+                padding: "10px 4px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                border:
+                  theme === "orange"
+                    ? `2px solid ${currentTheme.primary}`
+                    : "1px solid #3b4352",
+                background: "#17202e",
+                color: "white",
+                fontSize: "18px",
+              }}
+            >
+              🟠
+            </button>
+
+            <button
+              onClick={() =>
+                setTheme("purple")
+              }
+              style={{
+                padding: "10px 4px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                border:
+                  theme === "purple"
+                    ? `2px solid ${currentTheme.primary}`
+                    : "1px solid #3b4352",
+                background: "#17202e",
+                color: "white",
+                fontSize: "18px",
+              }}
+            >
+              🟣
+            </button>
+
+            <button
+              onClick={() =>
+                setTheme("green")
+              }
+              style={{
+                padding: "10px 4px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                border:
+                  theme === "green"
+                    ? `2px solid ${currentTheme.primary}`
+                    : "1px solid #3b4352",
+                background: "#17202e",
+                color: "white",
+                fontSize: "18px",
+              }}
+            >
+              🟢
+            </button>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -155,480 +607,265 @@ export default function TicTacToePage() {
         minHeight: "100vh",
         background: currentTheme.background,
         color: "white",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "18px",
-        padding: "24px",
+        padding: "24px 16px 40px",
         boxSizing: "border-box",
       }}
     >
       {/* TITLE */}
-
-      <h1
+      <header
         style={{
-          margin: 0,
-          color: currentTheme.primary,
+          width: "100%",
+          maxWidth: "1100px",
+          margin: "0 auto 24px",
           textAlign: "center",
         }}
       >
-        🎮 TIC TAC TOE
-      </h1>
-
-      {/* TURN CARD */}
-
-      {!winner && (
-        <div
+        <h1
           style={{
-            width: "min(90vw, 500px)",
-            boxSizing: "border-box",
-            padding: "14px 20px",
-            borderRadius: "16px",
-            textAlign: "center",
-            background: "#111722",
-            border: `2px solid ${currentTheme.primary}`,
-            boxShadow: `0 0 18px ${currentTheme.primary}55`,
+            margin: 0,
+            color: currentTheme.primary,
+            fontSize:
+              "clamp(26px, 5vw, 40px)",
+            fontWeight: 900,
+            letterSpacing: "0.02em",
           }}
         >
-          <div
-            style={{
-              fontSize: "14px",
-              opacity: 0.7,
-              marginBottom: "4px",
-            }}
-          >
-            CURRENT TURN
-          </div>
+          🎮 TIC TAC TOE
+        </h1>
 
-          <div
-            style={{
-              fontSize: "26px",
-              fontWeight: "bold",
-              color: currentTheme.primary,
-            }}
-          >
-            {turn === "X" ? "❌" : "⭕"}{" "}
-            {getPlayerName(turn)}'s Turn
-          </div>
-        </div>
-      )}
-
-      {/* SCORE CARD */}
-
-      <div
-        style={{
-          width: "min(90vw, 500px)",
-          display: "flex",
-          alignItems: "stretch",
-          justifyContent: "center",
-          gap: "10px",
-        }}
-      >
-        {/* PLAYER 1 */}
-
-        <div
+        <p
           style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "14px",
-            textAlign: "center",
-            background: "#111722",
-            border:
-              turn === player1Symbol && !winner
-                ? `2px solid ${currentTheme.primary}`
-                : "2px solid #303642",
+            margin: "7px 0 0",
+            fontSize: "13px",
+            opacity: 0.6,
           }}
         >
-          <div style={{ fontSize: "13px", opacity: 0.7 }}>
-            {player1Symbol === "X" ? "❌" : "⭕"}
-          </div>
+          Local Multiplayer
+        </p>
+      </header>
 
-          <div
-            style={{
-              fontWeight: "bold",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {player1Name}
-          </div>
-
-          <div
-            style={{
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: currentTheme.primary,
-            }}
-          >
-            {score[player1Symbol]}
-          </div>
-
-          <div style={{ fontSize: "11px", opacity: 0.6 }}>
-            WINS
-          </div>
-        </div>
-
-        {/* DRAWS */}
-
+      {/* =========================
+          DESKTOP
+          ========================= */}
+      <div className="ttt-desktop">
         <div
           style={{
-            width: "70px",
-            padding: "12px 5px",
-            borderRadius: "14px",
-            textAlign: "center",
-            background: "#111722",
-            border: "2px solid #303642",
+            width: "min(1100px, 100%)",
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(0, 1fr) 300px",
+            gap: "20px",
+            alignItems: "start",
           }}
         >
-          <div style={{ fontSize: "13px", opacity: 0.7 }}>
-            🤝
-          </div>
-
-          <div
+          {/* LEFT — BOARD */}
+          <section
             style={{
-              fontSize: "22px",
-              fontWeight: "bold",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "18px",
+              minWidth: 0,
             }}
           >
-            {score.draw}
-          </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <TicTacToeBoard
+                board={board}
+                play={play}
+                theme={currentTheme}
+              />
+            </div>
 
-          <div style={{ fontSize: "11px", opacity: 0.6 }}>
-            DRAWS
-          </div>
-        </div>
+            {renderWinnerCard()}
+          </section>
 
-        {/* PLAYER 2 */}
-
-        <div
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "14px",
-            textAlign: "center",
-            background: "#111722",
-            border:
-              turn === player2Symbol && !winner
-                ? `2px solid ${currentTheme.secondary}`
-                : "2px solid #303642",
-          }}
-        >
-          <div style={{ fontSize: "13px", opacity: 0.7 }}>
-            {player2Symbol === "X" ? "❌" : "⭕"}
-          </div>
-
-          <div
+          {/* RIGHT — SCOREBOARD + CONTROLS */}
+          <aside
             style={{
-              fontWeight: "bold",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
             }}
           >
-            {player2Name}
-          </div>
+            {/* SCOREBOARD */}
+            <div
+              style={{
+                background: "#111722",
+                border: `2px solid ${currentTheme.primary}55`,
+                borderRadius: "18px",
+                padding: "14px",
+              }}
+            >
+              {renderScoreboard()}
+            </div>
 
-          <div
-            style={{
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: currentTheme.secondary,
-            }}
-          >
-            {score[player2Symbol]}
-          </div>
-
-          <div style={{ fontSize: "11px", opacity: 0.6 }}>
-            WINS
-          </div>
-        </div>
-      </div>
-
-      {/* BOARD */}
-
-      <TicTacToeBoard
-        board={board}
-        play={play}
-        theme={currentTheme}
-      />
-
-      {/* WINNER / DRAW CARD */}
-
-      {winner && (
-        <div
-          style={{
-            width: "min(90vw, 500px)",
-            padding: "20px",
-            boxSizing: "border-box",
-            borderRadius: "18px",
-            textAlign: "center",
-            background: "#111722",
-            border: `2px solid ${
-              winner === "draw"
-                ? "#ffffff"
-                : currentTheme.primary
-            }`,
-            boxShadow: `0 0 25px ${
-              winner === "draw"
-                ? "#ffffff33"
-                : currentTheme.primary + "66"
-            }`,
-          }}
-        >
-          {winner === "draw" ? (
-            <>
-              <div style={{ fontSize: "32px" }}>🤝</div>
-
+            {/* CONTROLS */}
+            <div
+              style={{
+                background: "#111722",
+                border: `2px solid ${currentTheme.primary}55`,
+                borderRadius: "18px",
+                padding: "16px",
+              }}
+            >
               <div
                 style={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
-                IT'S A DRAW!
-              </div>
-
-              <div style={{ opacity: 0.7 }}>
-                Nobody wins this round.
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize: "34px" }}>🏆</div>
-
-              <div
-                style={{
-                  fontSize: "26px",
-                  fontWeight: "bold",
+                  marginBottom: "12px",
                   color: currentTheme.primary,
+                  fontSize: "17px",
+                  fontWeight: "bold",
                 }}
               >
-                {getPlayerName(winner)} WINS!
+                🎮 Game Controls
               </div>
 
-              <div style={{ opacity: 0.7 }}>
-                {winner === "X" ? "❌ X" : "⭕ O"} completed
-                the winning line.
+              {renderActionButtons()}
+            </div>
+
+            {/* SETTINGS */}
+            <div
+              style={{
+                background: "#111722",
+                border: `2px solid ${currentTheme.primary}55`,
+                borderRadius: "18px",
+                padding: "16px",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "16px",
+                  color: currentTheme.primary,
+                  fontSize: "17px",
+                  fontWeight: "bold",
+                }}
+              >
+                ⚙️ Game Settings
               </div>
-            </>
-          )}
+
+              {renderSettings()}
+            </div>
+          </aside>
         </div>
-      )}
-
-      {/* CONTROLS */}
-
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
-        <button
-          onClick={restart}
-          style={{
-            padding: "11px 18px",
-            borderRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          🔄 Restart
-        </button>
-
-        <button
-          onClick={newGame}
-          style={{
-            padding: "11px 18px",
-            borderRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          🆕 New Game
-        </button>
-
-        <button
-          onClick={() => setSettingsOpen(!settingsOpen)}
-          style={{
-            padding: "11px 18px",
-            borderRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          ⚙️ Settings
-        </button>
       </div>
 
-      {/* SETTINGS */}
-
-      {settingsOpen && (
-        <div
+      {/* =========================
+          MOBILE
+          ========================= */}
+      <div className="ttt-mobile">
+        <section
           style={{
-            width: "min(90vw, 500px)",
-            padding: "20px",
-            boxSizing: "border-box",
-            borderRadius: "18px",
-            background: "#111722",
-            border: `2px solid ${currentTheme.primary}`,
+            width: "min(560px, 100%)",
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "16px",
           }}
         >
-          <h2
+          {/* SCOREBOARD */}
+          <div
             style={{
-              marginTop: 0,
-              color: currentTheme.primary,
+              width: "100%",
             }}
           >
-            ⚙️ Game Settings
-          </h2>
+            {renderScoreboard()}
+          </div>
 
-          {/* PLAYER 1 */}
-
-          <div style={{ marginBottom: "16px" }}>
-            <label>
-              Player 1 Name
-            </label>
-
-            <input
-              value={player1Name}
-              onChange={(e) =>
-                setPlayer1Name(e.target.value)
-              }
-              style={{
-                display: "block",
-                width: "100%",
-                boxSizing: "border-box",
-                marginTop: "6px",
-                padding: "10px",
-                borderRadius: "8px",
-              }}
+          {/* BOARD */}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <TicTacToeBoard
+              board={board}
+              play={play}
+              theme={currentTheme}
             />
           </div>
 
-          {/* PLAYER 2 */}
+          {/* WINNER */}
+          {renderWinnerCard()}
 
-          <div style={{ marginBottom: "16px" }}>
-            <label>
-              Player 2 Name
-            </label>
+          {/* ACTION BUTTONS */}
+          <div
+            style={{
+              width: "100%",
+            }}
+          >
+            {renderActionButtons()}
+          </div>
 
-            <input
-              value={player2Name}
-              onChange={(e) =>
-                setPlayer2Name(e.target.value)
-              }
+          {/* SETTINGS TOGGLE */}
+          <button
+            onClick={() =>
+              setSettingsOpen(!settingsOpen)
+            }
+            style={{
+              width: "100%",
+              padding: "13px",
+              borderRadius: "12px",
+              cursor: "pointer",
+              border: `1px solid ${currentTheme.primary}66`,
+              background: "#111722",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
+          >
+            ⚙️{" "}
+            {settingsOpen
+              ? "Hide Settings ▲"
+              : "Game Settings ▼"}
+          </button>
+
+          {/* MOBILE SETTINGS */}
+          {settingsOpen && (
+            <div
               style={{
-                display: "block",
                 width: "100%",
+                padding: "18px",
                 boxSizing: "border-box",
-                marginTop: "6px",
-                padding: "10px",
-                borderRadius: "8px",
-              }}
-            />
-          </div>
-
-          {/* SYMBOL */}
-
-          <div style={{ marginBottom: "16px" }}>
-            <div style={{ marginBottom: "8px" }}>
-              Player 1 Symbol
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
+                borderRadius: "18px",
+                background: "#111722",
+                border: `2px solid ${currentTheme.primary}66`,
               }}
             >
-              <button
-                onClick={() =>
-                  changePlayer1Symbol("X")
-                }
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  borderRadius: "10px",
-                  border:
-                    player1Symbol === "X"
-                      ? `3px solid ${currentTheme.primary}`
-                      : "2px solid #555",
-                  background:
-                    player1Symbol === "X"
-                      ? currentTheme.primary
-                      : "#222",
-                  color: "white",
-                }}
-              >
-                ❌ X
-              </button>
-
-              <button
-                onClick={() =>
-                  changePlayer1Symbol("O")
-                }
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  borderRadius: "10px",
-                  border:
-                    player1Symbol === "O"
-                      ? `3px solid ${currentTheme.secondary}`
-                      : "2px solid #555",
-                  background:
-                    player1Symbol === "O"
-                      ? currentTheme.secondary
-                      : "#222",
-                  color: "white",
-                }}
-              >
-                ⭕ O
-              </button>
+              {renderSettings()}
             </div>
+          )}
+        </section>
+      </div>
 
-            <div
-              style={{
-                marginTop: "8px",
-                opacity: 0.7,
-                fontSize: "13px",
-              }}
-            >
-              {player1Name}: {player1Symbol} &nbsp; | &nbsp;
-              {player2Name}: {player2Symbol}
-            </div>
-          </div>
+      {/* RESPONSIVE CSS */}
+      <style jsx>{`
+        .ttt-desktop {
+          display: block;
+        }
 
-          {/* THEME */}
+        .ttt-mobile {
+          display: none;
+        }
 
-          <div>
-            <div style={{ marginBottom: "8px" }}>
-              Theme
-            </div>
+        @media (max-width: 800px) {
+          .ttt-desktop {
+            display: none;
+          }
 
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-              }}
-            >
-              <button onClick={() => setTheme("blue")}>
-                🔵
-              </button>
-
-              <button onClick={() => setTheme("orange")}>
-                🟠
-              </button>
-
-              <button onClick={() => setTheme("purple")}>
-                🟣
-              </button>
-
-              <button onClick={() => setTheme("green")}>
-                🟢
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          .ttt-mobile {
+            display: block;
+          }
+        }
+      `}</style>
     </main>
   );
 }
