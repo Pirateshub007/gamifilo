@@ -62,6 +62,31 @@ export default function Home() {
             </Link>
           </div>
 
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:-translate-y-1 hover:border-cyan-500">
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 text-3xl">
+              ❌
+            </div>
+
+            <h3 className="text-2xl font-bold">Tic Tac Toe</h3>
+
+            <p className="mt-2 text-slate-400">
+              Classic Tic Tac Toe with Local, AI, and Online multiplayer modes.
+            </p>
+
+            <div className="mt-4 flex flex-col gap-2 text-sm">
+              <span className="inline-flex w-fit rounded-full bg-green-500/15 px-3 py-1 text-green-400">
+                🎮 Single Player Available
+              </span>
+            </div>
+
+            <Link
+              href="/games/tic-tac-toe"
+              className="mt-6 inline-block rounded-lg bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
+            >
+              Play →
+            </Link>
+          </div>
+
           <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 opacity-60">
             <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 text-3xl">
               🐍
